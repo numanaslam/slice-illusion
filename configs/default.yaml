@@ -1,0 +1,48 @@
+# VCF3D configuration. Edit paths + dataset for your server.
+seed: 42
+
+paths:
+  raw: data/raw
+  processed: data/processed
+  concepts: data/concepts
+  results: experiments/results
+
+data:
+  dataset: BraTS            # BraTS | LIDC | AMOS
+  root: data/raw/Task01_BrainTumour
+  num_channels: 4           # BraTS: T1, T1ce, T2, FLAIR
+  vol_size: [128, 128, 128]
+  cache_rate: 0.1           # MONAI CacheDataset fraction
+  num_workers: 0            # Windows: keep 0 (spawn-safe). Linux/WSL: 4-8 for speed
+
+model:
+  source: reference         # reference | checkpoint
+  checkpoint: data/processed/backbone.pt
+  bottleneck: enc3          # concept layer: use enc3 (has nonlinearity downstream),
+                            # NOT enc4 which sits right before GAP+linear -> degenerate TCAV
+  num_classes: 2
+
+tcav:
+  num_random_sets: 20       # M random-negative draws
+  neg_per_set: 200
+  classifier: logistic      # logistic | svm
+  aggregate: mean           # 3D spatial aggregation of sensitivity
+  alpha_sig: 0.01
+
+svox:
+  num_supervoxels: 400
+  compactness: 0.1
+
+cbm:
+  l1: 1.0e-3
+  max_epochs: 50
+  lr: 0.05
+
+faith:
+  surrogate: context-nn     # zero | mean | tissue-mean | context-nn
+  feather_sigma: 2.0
+  steps: 20
+
+compute:
+  device: cuda              # cuda | cpu
+  amp: true                 # mixed precision for forward passes

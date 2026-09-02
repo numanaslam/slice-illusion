@@ -1,0 +1,49 @@
+# MSD Task07_Pancreas (abdominal CT) — dataset generality axis, 281 volumes
+# (large enough to train, unlike the 63-volume Lung task). Single-channel CT.
+seed: 42
+
+paths:
+  raw: data/raw
+  processed: data/processed_panc
+  concepts: data/concepts_panc
+  results: experiments/results_panc
+
+data:
+  dataset: PANCREAS
+  root: data/raw/Task07_Pancreas
+  num_channels: 1
+  lesion_label: 2            # Task07 labels: 1 = pancreas, 2 = tumour
+  vol_size: [96, 96, 96]
+  num_workers: 0
+
+model:
+  arch: reference           # run BOTH reference and resnet
+  source: checkpoint        # auto-resolves to backbone_<arch>.pt under processed_panc
+  bottleneck: enc3
+  num_classes: 2
+
+tcav:
+  num_random_sets: 20
+  neg_per_set: 200
+  classifier: logistic
+  aggregate: mean
+  alpha_sig: 0.01
+
+svox:
+  num_supervoxels: 300
+  compactness: 0.1
+
+cbm:
+  l1: 1.0e-3
+  max_epochs: 50
+  lr: 0.05
+
+faith:
+  surrogate: context-nn
+  feather_sigma: 2.0
+  steps: 10
+  slice_band: 1
+
+compute:
+  device: cuda
+  amp: true

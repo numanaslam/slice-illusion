@@ -1,0 +1,6 @@
+method,vol_auc,slice_auc,vol_std,slice_std
+gradcam,0.5688,0.9030,0.3938,0.1105
+tcav_edema,0.6164,0.9034,0.4455,0.1070
+tcav_enhancing,0.6226,0.9092,0.4393,0.1019
+tcav_non_enhancing,0.6186,0.9062,0.4371,0.1057
+random,0.6880,0.9174,0.3473,0.0989

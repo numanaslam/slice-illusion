@@ -1,0 +1,47 @@
+# Tier-1 expansion config: MedMNIST v2 3D — genuine-label volumetric classification
+# across modalities (CT / MRA / EM). Replaces the BraTS median-split proxy task with
+# real labels on many datasets, which is the breadth a MedIA/TMI submission needs.
+seed: 42
+
+paths:
+  raw: data/raw
+  processed: data/processed
+  concepts: data/concepts
+  results: experiments/results
+
+data:
+  dataset: medmnist3d
+  root: data/raw/medmnist        # medmnist downloads its .npz here on first use
+  num_channels: 1
+  vol_size: [64, 64, 64]         # MedMNIST+ size=64 (set --size 28 for the tiny variant)
+  num_workers: 0
+
+model:
+  source: checkpoint
+  arch: resnet                   # reference | resnet | densenet
+  bottleneck: enc3               # for arch=densenet use: features.transition2
+  num_classes: 2                 # overridden per dataset at runtime (Organ=11, Fracture=3, ...)
+
+tcav:                            # kept for API compatibility; multi-dataset panel uses
+  num_random_sets: 20           # gradcam/ig/occlusion/random (no per-dataset concepts needed)
+  neg_per_set: 200
+  classifier: logistic
+  aggregate: mean
+  alpha_sig: 0.01
+
+svox:
+  num_supervoxels: 200          # 64^3 volumes -> ~200 supervoxels is plenty
+  compactness: 0.1
+
+faith:
+  surrogate: context-nn         # operators.py adds blur|road, selected via replace_fn
+  feather_sigma: 2.0
+  steps: 20
+  slice_band: 1                 # K=1 strict per-slice; s11 can sweep like s04
+  blur_sigma: 6.0               # blur operator
+  road_sigma: 8.0               # road operator (noisy linear imputation)
+  road_noise: 0.03
+
+compute:
+  device: cuda
+  amp: true

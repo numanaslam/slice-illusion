@@ -1,0 +1,17 @@
+# data and model checkpoints stay local
+data/
+*.pt
+*.nii
+*.nii.gz
+# python
+__pycache__/
+*.pyc
+# OS / editor
+.DS_Store
+# paper sources are not part of the code release
+docs/
+# logs, archives, local backups
+*.log
+*.zip
+*.tgz
+results_aug04_backup/

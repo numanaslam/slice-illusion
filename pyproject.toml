@@ -1,0 +1,12 @@
+[project]
+name = "vcf3d"
+version = "0.1.0"
+description = "Volumetric Concept Faithfulness for 3D Medical Imaging"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+include = ["vcf3d*"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]

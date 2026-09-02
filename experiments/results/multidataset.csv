@@ -1,0 +1,17 @@
+dataset,modality,arch,operator,n,vol_signal,slice_signal,ratio,wilcoxon_p,ci_lo,ci_hi
+brats,MRI brain tumour (BraTS),resnet,context-nn,73,0.171237,0.008218,20.8379,3.438e-13,14.5628,29.8168
+brats,MRI brain tumour (BraTS),resnet,road,73,0.289529,0.007847,36.8944,1.133e-13,24.8352,54.8092
+brats,MRI brain tumour (BraTS),reference,context-nn,73,0.118641,0.015302,7.7535,6.456e-12,5.7822,10.3968
+brats,MRI brain tumour (BraTS),reference,road,73,0.155222,0.009414,16.4886,1.181e-13,13.5775,20.024
+fracturemnist3d,CT (rib fracture),resnet,context-nn,60,0.101823,0.027113,3.7555,7.541e-10,3.1035,4.5444
+fracturemnist3d,CT (rib fracture),resnet,road,60,0.108378,0.027227,3.9806,1.508e-10,3.3251,4.7653
+fracturemnist3d,CT (rib fracture),reference,context-nn,60,0.090717,0.014177,6.3989,6.890e-09,4.8087,8.5151
+fracturemnist3d,CT (rib fracture),reference,road,60,0.069645,0.012747,5.4636,6.588e-11,4.6336,6.4423
+nodulemnist3d,CT (lung nodule),resnet,context-nn,60,0.142221,0.007449,19.0936,6.987e-07,13.0123,28.0169
+nodulemnist3d,CT (lung nodule),resnet,road,60,0.039317,0.003116,12.618,1.714e-11,10.4874,15.1815
+nodulemnist3d,CT (lung nodule),reference,context-nn,60,0.026709,0.004031,6.6268,1.380e-08,4.6238,9.4974
+nodulemnist3d,CT (lung nodule),reference,road,60,0.013139,0.00239,5.4972,1.074e-10,4.3173,6.9995
+organmnist3d,CT (abdominal organ),resnet,context-nn,60,0.105329,0.003824,27.5454,5.779e-09,14.6343,51.8474
+organmnist3d,CT (abdominal organ),resnet,road,60,0.111454,0.004462,24.9778,1.630e-11,13.5423,46.0699
+organmnist3d,CT (abdominal organ),reference,context-nn,60,0.083785,0.004505,18.5975,2.068e-09,10.0841,34.2984
+organmnist3d,CT (abdominal organ),reference,road,60,0.07816,0.00448,17.4453,1.896e-11,11.0347,27.5803
