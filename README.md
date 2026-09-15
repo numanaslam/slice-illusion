@@ -101,6 +101,7 @@ Mapping of scripts to the paper's artefacts:
 | `s16_tau_sensitivity.py` | Confidence-threshold sensitivity from per-volume dumps |
 | `s17_seed_variance.py` | Across-seed variance of the random-control signal (Appendix C) |
 | `s18_export_visuals.py` | Slice and attribution exports for Figures 1 and 2 |
+| `s19_matched_budget.py` | Matched-absolute-budget deletion (spatial support vs magnitude control) |
 | `s09_publication_figures.py` | Camera-ready `fig_main` and `fig_analysis` |
 
 Numbers vary at the ~1% level across GPUs from floating-point non-determinism; the ranking
