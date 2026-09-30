@@ -138,7 +138,7 @@ tests/test_smoke.py          synthetic end-to-end, no dataset
             Verdicts on 3D Medical Image Classifiers},
   author = {Aslam, Numan and Mustafa, Ghulam and Qureshi, Adnan N.},
   year   = {2026},
-  note   = {Manuscript under review}
+  note   = {Preprint; code repository}
 }
 ```
 
@@ -148,10 +148,10 @@ Code released under the MIT License (see [`LICENSE`](LICENSE)). The datasets
 retain their own licences (BraTS / Medical Segmentation Decathlon and MedMNIST v2); see
 their sources for terms.
 
-## Provenance note
+## Changelog note
 
-An early circulated draft reported a secondary-architecture result of "32.6x (n=64)" on
-BraTS. That figure traced to a checkpoint state that was later overwritten and cannot be
-reproduced; it was removed rather than kept. The published secondary-architecture result
+An earlier internal draft reported a secondary-architecture result of "32.6x (n=64)" on
+BraTS that traced to a checkpoint state later overwritten; it was replaced with the
+current reproducible result rather than kept. The published secondary-architecture result
 (residual network, 34.6x, n=71) regenerates deterministically from this repository, as
 does every other number in the paper.
