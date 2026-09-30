@@ -81,9 +81,10 @@ def voxel_importance(model, x, dev):
     return xt.grad.abs()[0, 0].cpu().numpy()
 
 
-def signal(model, Xev, dev, mode):
+def signal(model, Xev, dev, mode, per_volume=False):
     """faithfulness signal = AUC(random) - AUC(best-real), equal-volume deletion.
-    mode 'vol' deletes 3D cubes by importance; 'slice' deletes within one axial slice."""
+    mode 'vol' deletes 3D cubes by importance; 'slice' deletes within one axial slice.
+    per_volume=True also returns the per-volume (random_auc - real_auc) gap array."""
     real_auc, rand_auc = [], []
     fill = float(Xev.mean())
     for x in Xev[:, 0]:
@@ -121,7 +122,10 @@ def signal(model, Xev, dev, mode):
                 k = int(total * s / STEPS)
                 ps.append(prob1(model, ap(x, k), dev))
             acc.append(np.trapz(ps, np.linspace(0, 1, len(ps))))
-    return float(np.mean(rand_auc) - np.mean(real_auc))
+    gap = np.array(rand_auc) - np.array(real_auc)          # per-volume signal
+    if per_volume:
+        return float(gap.mean()), gap
+    return float(gap.mean())
 
 
 def run(regime, dev):
@@ -140,10 +144,24 @@ def run(regime, dev):
         acc = (model(Xev.to(dev)).argmax(1).cpu() == yev).float().mean().item()
     conf = [i for i in range(len(Xev)) if yev[i] == 1 and prob1(model, Xev[i, 0], dev) > 0.6]
     Xc = Xev[conf]
-    v = signal(model, Xc, dev, "vol"); s = signal(model, Xc, dev, "slice")
+    v, vg = signal(model, Xc, dev, "vol", per_volume=True)
+    s, sg = signal(model, Xc, dev, "slice", per_volume=True)
     ratio = v / s if abs(s) > 1e-6 else float("inf")
-    print(f"[{regime}] acc={acc:.2f} n={len(Xc)} vol_sig={v:+.4f} slice_sig={s:+.4f} ratio={ratio:.1f}x", flush=True)
-    return acc, len(Xc), v, s, ratio
+    # paired Wilcoxon (per-volume volumetric vs slice-wise signal) + bootstrap CI on the ratio
+    try:
+        from scipy.stats import wilcoxon
+        _, p = wilcoxon(vg, sg)
+    except Exception:
+        p = float("nan")
+    rng = np.random.default_rng(0); n = len(Xc); rr = []
+    for _ in range(2000):
+        idx = rng.integers(0, n, n); den = sg[idx].mean()
+        rr.append(vg[idx].mean() / den if abs(den) > 1e-9 else np.nan)
+    rr = np.array(rr); rr = rr[np.isfinite(rr) & (rr > 0)]
+    lo, hi = (np.percentile(rr, [2.5, 97.5]) if len(rr) else (np.nan, np.nan))
+    print(f"[{regime}] acc={acc:.2f} n={n} vol_sig={v:+.4f} slice_sig={s:+.4f} "
+          f"ratio={ratio:.1f}x (95% CI {lo:.1f}-{hi:.1f}) paired p={p:.2e}", flush=True)
+    return acc, n, v, s, ratio, float(lo), float(hi), p
 
 
 def main():
@@ -156,9 +174,11 @@ def main():
         rows.append((regime, *run(regime, dev)))
     os.makedirs(os.path.dirname(a.out), exist_ok=True)
     with open(a.out, "w", newline="") as fh:
-        w = csv.writer(fh); w.writerow(["regime", "acc", "n", "vol_signal", "slice_signal", "ratio"])
+        w = csv.writer(fh)
+        w.writerow(["regime", "acc", "n", "vol_signal", "slice_signal", "ratio", "ci_lo", "ci_hi", "wilcoxon_p"])
         for r in rows:
-            w.writerow([r[0], f"{r[1]:.4f}", r[2], f"{r[3]:.6f}", f"{r[4]:.6f}", f"{r[5]:.4f}"])
+            w.writerow([r[0], f"{r[1]:.4f}", r[2], f"{r[3]:.6f}", f"{r[4]:.6f}",
+                        f"{r[5]:.4f}", f"{r[6]:.4f}", f"{r[7]:.4f}", f"{r[8]:.3e}"])
     print("\nExpected: concentrated ratio ~1 (slice-wise works), distributed ratio large "
           "(slice illusion). This isolates evidence distribution as the cause.")
     print(f"wrote {a.out}")
